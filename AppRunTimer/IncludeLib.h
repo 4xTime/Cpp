@@ -1,0 +1,16 @@
+#pragma once
+#include <iostream>
+#include <Windows.h>
+#include <TlHelp32.h>
+#include <chrono>
+#include <thread>
+#include <fstream>
+#include <limits>
+#include <string>
+#include <filesystem>
+#include <locale>
+#include <codecvt>
+#include <ctime>
+#include <string.h>
+#include <vector>
+#undef max
