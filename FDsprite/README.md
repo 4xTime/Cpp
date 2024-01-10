@@ -47,7 +47,7 @@ mySprites.Load(spritePaths, numberOfSprites);
 - `void change_sprite_between(int from, int to, int cycle, Tick& tick)`: Changes the sprite between specified indices based on a cycle duration managed by a `Tick` object.
 - `void set_pos(float x, float y, int direction = 0)`: Sets the position of all sprites to the provided x and y coordinates, with an optional direction parameter.
 - `sf::Vector2f get_curr_pos()`: Retrieves the current position of the first sprite.
-
+- `change_sprite_between_while_set_pos(int from,int to,int cycle,Tick& tick,float x, float y, int direction = 0)`:sets the position of sprites to a given coordinate (x, y) and, simultaneously, changes the displayed sprite between specified indices (from to to) based on a cycle managed by a Tick object. If the starting sprite index (from) changes, it resets the cycle for smooth transition between sprites. Finally, it updates the current sprite index to reflect the change in the displayed sprite.
 ## Example Usage
 
 Here's an example demonstrating how to use these classes:

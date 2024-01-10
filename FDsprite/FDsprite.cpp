@@ -1,4 +1,5 @@
 #include<SFML/Graphics.hpp>
+#include <iostream>
 
 class Tick{
 private:
@@ -42,18 +43,22 @@ public:
             FD_change_sprite_idle_from = from;
             FD_change_sprite_idle_to = to;
           
-            if (FD_change_sprite_idle_current <= FD_change_sprite_idle_to && FD_change_sprite_idle_current >= FD_change_sprite_idle_from)
+
+            if (FD_change_sprite_idle_current != FD_change_sprite_idle_to && FD_change_sprite_idle_current >= FD_change_sprite_idle_from)
                 FD_change_sprite_idle_current++;
             else
                 FD_change_sprite_idle_current = FD_change_sprite_idle_from;
-            
+
 
             FD_sprite_index = FD_change_sprite_idle_current;
 
+
             tick.tick_restart_after_cycle();
 
-            if (FD_change_sprite_idle_current >= to)
-                FD_change_sprite_idle_current = from -1;
+
+            if (FD_change_sprite_idle_current > FD_change_sprite_idle_to)
+                FD_change_sprite_idle_current = FD_change_sprite_idle_from;
+
         }
     }
 
@@ -63,6 +68,19 @@ public:
         }
         FD_sprite_index = direction;
     }
+
+    void change_sprite_between_while_set_pos(int from,int to,int cycle,Tick& tick,float x, float y, int direction = 0) {
+        set_pos(x, y, direction);
+        if (FD_change_sprite_idle_from != from) {
+            cycle = 0;
+            change_sprite_between(from, to, cycle, tick);
+        }
+        else {
+            change_sprite_between(from, to, cycle, tick);
+        }
+        FD_sprite_index = FD_change_sprite_idle_current;
+    }
+
     sf::Vector2f get_curr_pos() {
         return sprite[0].getPosition();
     }
