@@ -61,3 +61,5 @@ int main() {
 
     return 0;
 }
+##License
+This code is provided under the MIT License. Feel free to use, modify, and distribute the code.
