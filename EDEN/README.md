@@ -40,7 +40,7 @@ int main() {
     std::string string_decrpyted_without_padding = eden.RemovePaddingFromString(string_decrypted);
 
     std::cout << "Original text: " << plaintext << std::endl;
-    std::cout << "Encrypted text: " << plaintext << std::endl;
+    std::cout << "Encrypted text: " << string_encrypted << std::endl;
     std::cout << "Decrypted text: " << string_decrypted << std::endl;
     std::cout << "Decrypted text without padding: " << string_decrpyted_without_padding << std::endl;
 
