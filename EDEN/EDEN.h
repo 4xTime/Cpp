@@ -7,16 +7,20 @@ private:
 	const unsigned char padding_singe = '°';
 	//const unsigned char padding_singe = 'A';
 	AES aes;
-	std::vector<unsigned char> key = {
-	0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC, 0xDE, 0xEF, 0xFE, 0xDC,
-	0xBA, 0x98, 0x76, 0x54, 0x32, 0x10, 0xAB, 0xCD, 0xEF, 0x00
-	};
+	std::vector<unsigned char> c_key;
 
 	std::vector<unsigned char> convert_data(std::string data);
+
 public:
-	EDEN(AESKeyLength AESKeyLenght) {
+	EDEN(AESKeyLength AESKeyLenght,std::vector<unsigned char> key) {
 		AES f_aes(AESKeyLenght);
 		aes = f_aes;
+
+		if (key.size() < 16) {
+			fprintf(stderr, "Error: Key lenght\n");
+			exit(EXIT_FAILURE);
+		}
+		c_key = key;
 	}
 
 	std::string GetEncryptedTextAsString(std::vector <std::vector<unsigned char>> data);

@@ -6,7 +6,7 @@ EDEN is an implementation of the cryptographic AES (Advanced Encryption Standard
 
 ### Example Usage
 
-1. Create an instance of the `EDEN` class by providing the desired AES key length.
+1. Create an instance of the `EDEN` class by providing the desired AES key length and key.
 2. Use the `EncryptText` method to encrypt the text.
 3. Use the `DecryptText` method to decrypt the encrypted text.
 
@@ -15,9 +15,14 @@ EDEN is an implementation of the cryptographic AES (Advanced Encryption Standard
 #include <iostream>
 
 int main() {
-    // Creating an instance of the EDEN class with a 128-bit key
-    EDEN eden(AESKeyLength::AES_128);
+    // Creating key that have minimum 16 elemetns
+    std::vector<unsigned char> key = {
+    1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16
+    };
 
+    // Creating an instance of the EDEN class with a 128-bit key
+    EDEN eden(AESKeyLength::AES_128,key);
+    
     // Text to encrypt
     std::string plaintext = "Hello, world!";
 

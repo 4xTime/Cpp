@@ -55,7 +55,7 @@ std::vector <std::vector<unsigned char>> EDEN::EncryptText(std::string data) {
 			}
 			text.erase(0, spacesToAdd);
 		}
-		enc.push_back(aes.EncryptECB(convert_data(buffer_str), key));
+		enc.push_back(aes.EncryptECB(convert_data(buffer_str), c_key));
 		buffer_str.clear();
 	}
 	return enc;
@@ -72,7 +72,7 @@ std::vector<unsigned char> EDEN::DecryptText(std::vector <std::vector<unsigned c
 		uchar_data.push_back(uchar);
 	}
 
-	return aes.DecryptECB(uchar_data, key);
+	return aes.DecryptECB(uchar_data, c_key);
 }
 
 std::string EDEN::RemovePaddingFromString(std::string DATA) {
