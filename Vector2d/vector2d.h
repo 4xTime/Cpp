@@ -1,8 +1,6 @@
 #pragma once
 #ifndef H_VECTOR2D_H
 #define H_VECTOR2D_H
-#include <vector>
-
 struct Vector2{
 	float x, y;
 	template <typename T>
