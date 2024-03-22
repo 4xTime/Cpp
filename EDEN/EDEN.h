@@ -1,10 +1,12 @@
-#pragma once
+ï»¿#pragma once
+#ifndef  H_EDEN_H
+#define H_EDEN_H
 #include <vector>
 #include "AES\AES.h"
 class EDEN {
 private:
 	const int BITSNUM = 16;
-	const unsigned char padding_singe = '°';
+	const unsigned char padding_singe = 'ï¿½';
 	//const unsigned char padding_singe = 'A';
 	AES aes;
 	std::vector<unsigned char> c_key;
@@ -12,7 +14,7 @@ private:
 	std::vector<unsigned char> convert_data(std::string data);
 
 public:
-	EDEN(AESKeyLength AESKeyLenght,std::vector<unsigned char> key) {
+	EDEN(AESKeyLength AESKeyLenght, std::vector<unsigned char> key) {
 		AES f_aes(AESKeyLenght);
 		aes = f_aes;
 
@@ -32,3 +34,4 @@ public:
 	std::vector<unsigned char>  DecryptText(std::vector <std::vector<unsigned char>>vec_DATA);
 	std::string RemovePaddingFromString(std::string DATA);
 };
+#endif

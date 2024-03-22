@@ -27,37 +27,22 @@ std::string EDEN::GetDecryptedTextAsString(std::vector <unsigned char> data) {
 }
 
 
-std::vector <std::vector<unsigned char>> EDEN::EncryptText(std::string data) {
-	std::string text = data;
-	std::string buffer_str;
+std::vector<std::vector<unsigned char>> EDEN::EncryptText(std::string data) {
+	std::vector<std::vector<unsigned char>> enc;
+	size_t pos = 0;
 
-	std::vector <std::vector<unsigned char>>enc;
+	while (pos < data.size()) {
+		size_t chunkSize = std::min<size_t>(16, data.size() - pos);
+		std::string buffer_str = data.substr(pos, chunkSize);
+		pos += chunkSize;
 
-	while (text.size() != 0) {
-		if (text.size() >= 16) {
-			for (int i = 0; i < 16; i++) {
-				buffer_str += text[i];
-			}
-
-			text.erase(0, 16);
-		}
-		else if (text.size() != text.empty() && buffer_str.size() < 16) {
-			int minChank = std::min(static_cast<int>(text.size()), 16);
-			for (int i = 0; i < minChank; i++) {
-				buffer_str += text[i];
-			}
-			text.erase(0, minChank);
-		}
 		if (buffer_str.size() < 16) {
-			int spacesToAdd = 16 - buffer_str.size();
-			for (int i = 0; i < spacesToAdd; i++) {
-				buffer_str += padding_singe;
-			}
-			text.erase(0, spacesToAdd);
+			buffer_str.append(16 - buffer_str.size(), padding_singe);
 		}
+
 		enc.push_back(aes.EncryptECB(convert_data(buffer_str), c_key));
-		buffer_str.clear();
 	}
+
 	return enc;
 }
 
@@ -67,9 +52,8 @@ std::vector<unsigned char> EDEN::DecryptText(std::vector <std::vector<unsigned c
 	std::vector<unsigned char> uchar_data;
 
 	// Convert string to unsigned char array
-	for (char c : DATA) {
-		unsigned char uchar = static_cast<unsigned char>(c);
-		uchar_data.push_back(uchar);
+	for (char Char : DATA) {
+		uchar_data.push_back(static_cast<unsigned char>(Char));
 	}
 
 	return aes.DecryptECB(uchar_data, c_key);
