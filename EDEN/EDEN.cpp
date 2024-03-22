@@ -1,17 +1,12 @@
 #include "EDEN.h"
 
-std::vector<unsigned char> EDEN::convert_data(std::string data) {
-	std::vector<unsigned char> v_data;
-	for (int i = 0; i < data.size(); ++i) {
-		v_data.push_back(data[i]);
-	}
-	return v_data;
-}
-
 std::string EDEN::GetEncryptedTextAsString(std::vector <std::vector<unsigned char>> data) {
 	std::string s_data;
-	for (auto& mother_vec : data) {
-		for (auto& child_vec : mother_vec) {
+
+	s_data.reserve(data.size() * data[0].size());
+
+	for (const auto& mother_vec : data) {
+		for (const auto& child_vec : mother_vec) {
 			s_data += child_vec;
 		}
 	}
@@ -20,15 +15,23 @@ std::string EDEN::GetEncryptedTextAsString(std::vector <std::vector<unsigned cha
 
 std::string EDEN::GetDecryptedTextAsString(std::vector <unsigned char> data) {
 	std::string s_data;
+	
+	s_data.reserve(data.size());
+
 	for (auto& mother_vec : data) {
 		s_data += mother_vec;
 	}
 	return s_data;
 }
 
-
 std::vector<std::vector<unsigned char>> EDEN::EncryptText(std::string data) {
 	std::vector<std::vector<unsigned char>> enc;
+
+	std::vector<unsigned char>encBuffer;
+
+	// Reserve space
+	encBuffer.reserve(16);
+
 	size_t pos = 0;
 
 	while (pos < data.size()) {
@@ -40,22 +43,28 @@ std::vector<std::vector<unsigned char>> EDEN::EncryptText(std::string data) {
 			buffer_str.append(16 - buffer_str.size(), padding_singe);
 		}
 
-		enc.push_back(aes.EncryptECB(convert_data(buffer_str), c_key));
+		for (size_t i = 0; i < buffer_str.size(); ++i) {
+			encBuffer.push_back(buffer_str[i]);
+		}
+
+		enc.push_back(aes.EncryptECB(encBuffer, c_key));
+		encBuffer.clear();
 	}
 
 	return enc;
 }
 
 std::vector<unsigned char> EDEN::DecryptText(std::vector <std::vector<unsigned char>>vec_DATA) {
-	std::string DATA = GetEncryptedTextAsString(vec_DATA);
-
 	std::vector<unsigned char> uchar_data;
+	
+	// Reserve space
+	uchar_data.reserve(vec_DATA.size() * vec_DATA[0].size());
 
-	// Convert string to unsigned char array
-	for (char Char : DATA) {
-		uchar_data.push_back(static_cast<unsigned char>(Char));
+	// Converte data to unsigned char 
+	for (char vec : GetEncryptedTextAsString(vec_DATA)) {
+		uchar_data.push_back(static_cast<unsigned char>(vec));
 	}
-
+	
 	return aes.DecryptECB(uchar_data, c_key);
 }
 

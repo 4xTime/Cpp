@@ -1,5 +1,5 @@
 ﻿#pragma once
-#ifndef  H_EDEN_H
+#ifndef H_EDEN_H
 #define H_EDEN_H
 #include <vector>
 #include "AES\AES.h"
@@ -10,8 +10,6 @@ private:
 	//const unsigned char padding_singe = 'A';
 	AES aes;
 	std::vector<unsigned char> c_key;
-
-	std::vector<unsigned char> convert_data(std::string data);
 
 public:
 	EDEN(AESKeyLength AESKeyLenght, std::vector<unsigned char> key) {
