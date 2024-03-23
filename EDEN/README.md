@@ -16,7 +16,7 @@ EDEN is an implementation of the cryptographic AES (Advanced Encryption Standard
 
 int main() {
     // Creating key that have minimum 16 elemetns
-    std::vector<unsigned char> key = {
+    vectorUC key = {
     1, 2, 3, 4, 5, 6, 7,8,9,10,11,12,13,14,15,16
     };
 
@@ -27,12 +27,12 @@ int main() {
     std::string plaintext = "Hello, world!";
 
     // Encrypting the text
-    std::vector<std::vector<unsigned char>> encrypted = eden.EncryptText(plaintext);
+    vector2UC encrypted = eden.EncryptText(plaintext);
     // Get encrypted text as string
     std::string string_encrypted = eden.GetEncryptedTextAsString(encrypted);
 
     // Decrypting the text
-    std::vector<unsigned char>decrpyted = eden.DecryptText(encrypted);
+    vectorUC decrpyted = eden.DecryptText(encrypted);
     // Get decrypted text as string
     std::string string_decrypted = eden.GetDecryptedTextAsString(decrpyted);
 
@@ -40,7 +40,7 @@ int main() {
     std::string string_decrpyted_without_padding = eden.RemovePaddingFromString(string_decrypted);
 
     std::cout << "Original text: " << plaintext << std::endl;
-    std::cout << "Encrypted text: " << string_encrypted << std::endl;
+    std::cout << "Encrypted text: " << plaintext << std::endl;
     std::cout << "Decrypted text: " << string_decrypted << std::endl;
     std::cout << "Decrypted text without padding: " << string_decrpyted_without_padding << std::endl;
 
