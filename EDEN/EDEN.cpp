@@ -5,9 +5,9 @@ std::string EDEN::GetEncryptedTextAsString(vector2UC data) {
 
 	s_data.reserve(data.size() * data[0].size());
 
-	for (const auto& mother_vec : data) {
-		for (const auto& child_vec : mother_vec) {
-			s_data += child_vec;
+	for (const auto& motherVec : data) {
+		for (const auto& childVec : motherVec) {
+			s_data += childVec;
 		}
 	}
 	return s_data;
@@ -18,16 +18,16 @@ std::string EDEN::GetDecryptedTextAsString(vectorUC data) {
 
 	s_data.reserve(data.size());
 
-	for (auto& mother_vec : data) {
-		s_data += mother_vec;
+	for (auto& motherVec : data) {
+		s_data += motherVec;
 	}
 	return s_data;
 }
 
 vector2UC EDEN::EncryptText(std::string data) {
-	std::vector<std::vector<unsigned char>> enc;
+	vector2UC enc;
 
-	std::vector<unsigned char>encBuffer;
+	vectorUC encBuffer;
 
 	// Reserve space
 	encBuffer.reserve(BITSNUM);
@@ -47,7 +47,20 @@ vector2UC EDEN::EncryptText(std::string data) {
 			encBuffer.push_back(buffer_str[i]);
 		}
 
-		enc.push_back(aes.EncryptECB(encBuffer, c_key));
+		switch (c_type)
+		{
+		case ECB:
+			enc.push_back(aes.EncryptECB(encBuffer, c_key));
+			break;
+		case CBC:
+			enc.push_back(aes.EncryptCBC(encBuffer, c_key, c_iv));
+			break;
+		case CFB:
+			enc.push_back(aes.EncryptCFB(encBuffer, c_key, c_iv));
+			break;
+		default:
+			break;
+		}
 		encBuffer.clear();
 	}
 
@@ -55,17 +68,63 @@ vector2UC EDEN::EncryptText(std::string data) {
 }
 
 vectorUC EDEN::DecryptText(vector2UC vecDATA) {
-	std::vector<unsigned char> uchar_data;
+	vectorUC uchar_data;
+	vectorUC decryptedVecUC;
+	vector2UC decryptedChunkData2d;
 
 	// Reserve space
 	uchar_data.reserve(vecDATA.size() * vecDATA[0].size());
+	decryptedVecUC.reserve(vecDATA.size() * vecDATA[0].size());
+	decryptedChunkData2d.reserve(vecDATA.size());
 
-	// Converte data to unsigned char 
-	for (char vec : GetEncryptedTextAsString(vecDATA)) {
-		uchar_data.push_back(static_cast<unsigned char>(vec));
+	if (c_type == ECB) {
+		for (char vec : GetEncryptedTextAsString(vecDATA)) {
+			uchar_data.push_back(static_cast<unsigned char>(vec));
+		}
+		return aes.DecryptECB(uchar_data, c_key);
 	}
+	else if(c_type != ECB) {// (:
+		size_t pos = 0;
 
-	return aes.DecryptECB(uchar_data, c_key);
+		for (char vec : GetEncryptedTextAsString(vecDATA)) {
+			uchar_data.push_back(static_cast<unsigned char>(vec));
+		}
+
+		std::string strData;
+		for (auto i : uchar_data) {
+			strData += i;
+		}
+		
+		while (pos < uchar_data.size()) {
+			size_t chunkSize = std::min<size_t>(BITSNUM, uchar_data.size() - pos);
+			std::string buffer_str = strData.substr(pos, chunkSize);
+			pos += chunkSize;
+
+			std::vector<unsigned char> temp;
+			if (buffer_str.size() <= BITSNUM) {
+				for (char c : buffer_str) {
+					temp.push_back(static_cast<unsigned char>(c));
+				}
+				switch (c_type)
+				{
+				case CBC:
+					decryptedChunkData2d.push_back(aes.DecryptCBC(temp, c_key, c_iv));
+					break;
+				case CFB:
+					decryptedChunkData2d.push_back(aes.DecryptCFB(temp, c_key, c_iv));
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		for (auto motherVec : decryptedChunkData2d) {
+			for (auto childVec : motherVec) {
+				decryptedVecUC.push_back(childVec);
+			}
+		}
+		return decryptedVecUC;
+	}
 }
 
 std::string EDEN::RemovePaddingFromString(std::string DATA) {
