@@ -203,10 +203,138 @@ FileConfigPos fileMenager::getModPackPosNameStatus(std::string configFile) {
 					modNameBuffer += line[i];
 				}
 				modName.push_back(modNameBuffer);
+				modNameBuffer.clear();
 			}
 		}
 		return FileConfigPos(modPos, modName, modStatus);
 	}
 	std::cout << "cant open a config" << std::endl;
 	exit(1);
+}
+
+void fileMenager::enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable,bool state) {
+	std::fstream FileModMenagerConfig(configFile, std::ios::in | std::ios::out);
+	std::fstream FileCk2ModFile(ck2ModFile, std::ios::in | std::ios::out);
+
+	std::map<int, std::string> lines;
+	std::map<int, std::string> linesCK2SETTGINS;
+
+	std::vector<int>modPackModsToActiveLineNum;
+	std::vector<int>modPosList;
+
+	std::string lineCk2ModFile;
+	std::string lineModMenagerFile;
+	std::string modPackModToActive;
+	std::string modPackName;
+
+	bool startRead = false;
+
+	int itterator = 0;
+	int linePos = 0;
+	if (FileModMenagerConfig.is_open()) {
+		while (getline(FileModMenagerConfig, lineModMenagerFile)) {
+			if (linePos == lineNum) {
+				if (lable == LABLE::mod) {
+					lineModMenagerFile.erase(lineModMenagerFile.length() - 2, 2);
+					lines[itterator] = "\"mod/" + lineModMenagerFile + '\"';
+					//itterator jest bezsensu mozemy zast¹piæ zwyk³ym stringem i tak funkcje wykona sie raz
+					//dla jednego moda CHANGE IT!
+					itterator++;
+				}
+				else if (lable == LABLE::modPack) {
+					lines[itterator] = lineModMenagerFile;
+					modPackName = lineModMenagerFile;
+					for (int i = 0; i < lines[itterator].length(); i++) {
+						if (lines[itterator][i] == '.') {
+							startRead = true;
+						}
+						if (startRead) {
+							modPackModToActive += lines[itterator][i];
+						}
+					}
+					modPackModToActive.erase(modPackModToActive.length() - 2, 2);
+					modPosList = getVectroOfModPos(modPackModToActive);
+					for (const auto a : modPosList) {
+						enableDisableModCK2(configFile, ck2ModFile, a, LABLE::mod, state);
+					}
+				}
+			}
+			linePos++;
+		}
+	}
+	else {
+		std::cout << "Config file cannot open" << std::endl;
+		exit(1);
+	}
+
+	int itteratorCK2SETTGINS = 0;
+	
+	//WHILE DELETING SOME LINE FROM SETTGINS DUPLICATE!
+	if (FileCk2ModFile.is_open()) {
+		if (state) {
+			//FIX FOR ADDING MOD PACK NAME IN CK2 SETTINGS
+			if (lines[0] != modPackName) {
+				std::string modPayload = lines[0];
+				bool canWrite = false;
+				while (getline(FileCk2ModFile, lineCk2ModFile)) {
+					linesCK2SETTGINS[itteratorCK2SETTGINS] = lineCk2ModFile;
+					itteratorCK2SETTGINS++;
+				}
+				for (int i = 0; i < itteratorCK2SETTGINS; i++) {
+					if (linesCK2SETTGINS[i] == "last_mods=" && linesCK2SETTGINS[i + 2] != "}") {
+						linesCK2SETTGINS[i + 2] += " " + modPayload;
+					}
+					else if (linesCK2SETTGINS[i] == "last_mods=" && linesCK2SETTGINS[i + 2] == "}") {
+						linesCK2SETTGINS[i + 1] += "\n" + modPayload;
+					}
+				}
+				FileCk2ModFile.clear();
+				FileCk2ModFile.seekp(0, std::ios::beg);
+				for (int i = 0; i < itteratorCK2SETTGINS; i++) {
+					FileCk2ModFile << linesCK2SETTGINS[i] + "\n";
+				}
+			}
+		}
+		else if (!state) {
+			if (lines[0] != modPackName) {
+				std::string modPayload = lines[0]; 
+				std::vector<std::string>writeBuffer;
+				bool canWrite = false;
+				while (getline(FileCk2ModFile, lineCk2ModFile)) {
+					linesCK2SETTGINS[itteratorCK2SETTGINS] = lineCk2ModFile;
+					itteratorCK2SETTGINS++;
+				}
+
+				for (int i = 0; i < itteratorCK2SETTGINS; i++) {
+					std::size_t found = linesCK2SETTGINS[i].find(modPayload);
+					if (found != std::string::npos) {
+						linesCK2SETTGINS[i].erase(found, linesCK2SETTGINS[i].length());
+					}
+				}
+
+				FileCk2ModFile.clear();
+				FileCk2ModFile.seekp(0, std::ios::beg);
+				for (int i = 0; i < itteratorCK2SETTGINS; i++) {
+					FileCk2ModFile << linesCK2SETTGINS[i] + "\n";
+				}
+			}
+		}
+	}
+	
+}
+
+std::vector<int> fileMenager::getVectroOfModPos(std::string posString) {
+	std::vector<int> pos;
+	std::string StringIntBuffer;
+	for (int i = 0; i < posString.length(); i++) {
+		if (posString[i] != '.' ) {
+			StringIntBuffer += posString[i];
+		}
+		if (posString[i] == '.' && i != posString.length()) {
+			pos.push_back(std::atoi(StringIntBuffer.c_str()));
+			StringIntBuffer.clear();
+		}
+	}
+	pos.erase(pos.begin());
+	return pos;
 }

@@ -26,3 +26,36 @@ bool Util:: checkIfModDataFolderExistOrCreate() {
 	}
 	return true;
 }
+
+void Util::checkIfModsUsedLineExistIfNotCreate(std::string ck2ModFile) {
+	std::fstream FileCk2ModFile(ck2ModFile, std::ios::in | std::ios::out);
+	int lineItteratr = 0;
+	std::string line;
+	std::vector<std::string>fileLinesBuffer;
+	if (FileCk2ModFile.is_open()) {
+		while (std::getline(FileCk2ModFile, line)) {
+			lineItteratr++;
+			fileLinesBuffer.push_back(line);
+		}
+		bool lastModsFound = false;
+		for (int i = 0; i < lineItteratr; i++) {
+			std::size_t found = fileLinesBuffer[i].find("last_mods=");
+			if (found != std::string::npos) {
+				lastModsFound = true;
+			}
+		}
+		if (!lastModsFound) {
+			fileLinesBuffer.push_back("last_mods=\n{\n}");
+			lineItteratr++;
+			FileCk2ModFile.clear();
+			FileCk2ModFile.seekp(0, std::ios::beg);
+			for (int i = 0; i < lineItteratr; i++) {
+				FileCk2ModFile << fileLinesBuffer[i] + '\n';
+			}
+		}
+	}
+	else {
+		std::cout << "cannot open settings file for mods in paradox dir";
+		exit(1);
+	}
+}

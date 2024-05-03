@@ -155,7 +155,7 @@ public:
             exit(1);
         }
 
-
+        checkIfModsUsedLineExistIfNotCreate(ck2ModFile);
         for (int i = 0; i < file.numberOfMods; i++) {
             modStateForModpack[i] = false;
             int pos = checkIfModIsInFile(ck2mConfigFile, file.mods[i].string(), LABLE::mod);
@@ -236,6 +236,7 @@ public:
                 for (int i = 0; i < modInfo.modPos.size(); ++i) {
                     if (ImGui::Checkbox(modInfo.name[i].c_str(), &modPackState[i])) {
                         chagneStateOfMod(ck2mConfigFile, modInfo.modPos[i], modPackState[i]);
+                        enableDisableModCK2(ck2mConfigFile, ck2ModFile, modInfo.modPos[i], LABLE::modPack, modPackState[i]);
                     }
                 }
             }
@@ -277,7 +278,8 @@ public:
             ImGui::Begin("mods");
             for (int i = 0; i < file.numberOfMods; ++i) {
                 if (ImGui::Checkbox(file.mods[i].string().c_str(), &modState[i])) {
-                    chagneStateOfMod(ck2mConfigFile, posVec[i], modState[i]);
+                    chagneStateOfMod(ck2mConfigFile, posVec[i]-1, modState[i]);
+                    enableDisableModCK2(ck2mConfigFile, ck2ModFile, posVec[i] - 1, LABLE::mod, modState[i]);
                 }
             }
         }
