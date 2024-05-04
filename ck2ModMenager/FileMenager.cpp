@@ -212,6 +212,7 @@ FileConfigPos fileMenager::getModPackPosNameStatus(std::string configFile) {
 	exit(1);
 }
 
+
 void fileMenager::enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable,bool state) {
 	std::fstream FileModMenagerConfig(configFile, std::ios::in | std::ios::out);
 	std::fstream FileCk2ModFile(ck2ModFile, std::ios::in | std::ios::out);
@@ -337,4 +338,40 @@ std::vector<int> fileMenager::getVectroOfModPos(std::string posString) {
 	}
 	pos.erase(pos.begin());
 	return pos;
+}
+
+void fileMenager::startUpActions(){
+	checkIfModsUsedLineExistIfNotCreate(ck2ModFile);
+	for (int i = 0; i < file.numberOfMods; i++) {
+		modStateForModpack[i] = false;
+		int pos = checkIfModIsInFile(ck2mConfigFile, file.mods[i].string(), LABLE::mod);
+
+		if (pos != -1) {
+			appedNewModInFile(ck2mConfigFile, file.mods[i].string(), LABLE::mod, pos);
+		}
+		//GET FILE LINE AND CHECK MOD STATE
+		if (pos == -1) {
+			int modPos = getModPosInFile(ck2mConfigFile, file.mods[i].string());
+			if (modPos != -1) {
+				posVec.push_back(modPos);
+				char modStateChar = readStateOfMod(ck2mConfigFile, modPos);
+				if (modStateChar == '0') {
+					modState[i] = false;
+				}
+				if (modStateChar == '1') {
+					modState[i] = true;
+				}
+			}
+			else if (modPos == -1) { std::cout << "modPos unknown"; exit(1); }
+		}
+	}
+	FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
+	for (int i = 0; i < modInfo.modPos.size(); i++) {
+		if (modInfo.status[i] == '1') {
+			modPackState[i] = true;
+		}
+		else if (modInfo.status[i] == '0') {
+			modPackState[i] = false;
+		}
+	}
 }

@@ -9,8 +9,9 @@
 //MAKE DELETE BUTTON FOR MODPACK
 //MAKE MEYBE SOME CONFIG FOLDER FOR MENAGER THAT CAN STORE PATHS
 	// AND IN FIRST RUN POP UP THAT TAKE PATHS FROM USER
+//made button for chagne settings 
 int main(){
-	modMenager MM("C:\\Users\\Admin\\Documents\\Paradox Interactive\\Crusader Kings II\\mod");
+	modMenager MM;
 
 	while (true) {
 		MM.start();

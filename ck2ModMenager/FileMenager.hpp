@@ -26,6 +26,7 @@ protected:
 	bool* modState;
 	bool* modStateForModpack;
 	bool* modPackState;
+	std::vector<int> posVec;
 
 	Files serachForMod(std::string modFolder);
 	int checkIfModIsInFile(std::string configFile, std::string searchMod, LABLE lable);
@@ -36,6 +37,7 @@ protected:
 	void saveModPackInFile(std::string configFile, std::string modPackName, std::vector<int>linePosOfMods);
 	FileConfigPos getModPackPosNameStatus(std::string configFile);
 	void enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable,bool state);
+	void startUpActions();
 private:
 	std::vector<int> getVectroOfModPos(std::string posString);
 };

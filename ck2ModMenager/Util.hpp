@@ -11,10 +11,14 @@ enum LABLE {
 
 class Util {
 protected:
-	std::string ck2mSettings = "ck2msettings.ini";
+	const int ck2_mod_folder_path_lenght = 20;
+	const int ck2_settings_folder_path = 25;
+
+	std::string ck2mSettings = std::filesystem::current_path().string() + "\\ck2mModFolder\\ck2msettings.ini";
 	std::string ck2mConfigFile = std::filesystem::current_path().string() + "\\ck2mModFolder\\config.ini";
 	std::string ck2mModFolder = std::filesystem::current_path().string() + "\\ck2mModFolder";
-	std::string ck2ModFile = "C:\\Users\\Admin\\Documents\\Paradox Interactive\\Crusader Kings II\\settings.txt";
+	std::string ck2ModFile;
+	std::string ck2ModFolder;
 
 	void firstRunSettings(std::string f_ck2mConfigFile,std::string f_ck2mModFolder,std::string
 	f_ck2ModFile);
@@ -22,4 +26,7 @@ protected:
 	bool checkIfModDataFolderExistOrCreate();
 	void checkIfModsUsedLineExistIfNotCreate(std::string ck2ModFile);
 	bool checkIfck2mSettingsFileExistOrCreate();
+	//-------- TEST FUNCTIONS MEY NOT WORK AS INTENDED IN SOME CASES ----------------
+	bool checkIfck2mSettingsArePoulated();
+	void populateck2mSettings(std::string ck2modFile, std::string ck2modFolder);
 };

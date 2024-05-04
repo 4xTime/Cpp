@@ -88,9 +88,6 @@ private:
 
     ImVec4 menuColor = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
     MSG msg;
-
-    std::string ck2ModFolder;
-    std::vector<int> posVec;
     std::string modPackNameString;
 
     std::vector<int>modPosForModPack;
@@ -101,13 +98,14 @@ private:
     bool selectModPackButtonClicked = false;
     bool showMenuForNameModPack = false;
     bool showModPacks = true;
+
+
+    bool ck2mSettingsFilePopulated = false;
 public:
-    modMenager(std::string ck2ModFolder) {
-        this->ck2ModFolder = ck2ModFolder;
+    modMenager() {
         wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ck2ModMenager", nullptr };
         ::RegisterClassExW(&wc);
         hwnd = ::CreateWindowW(wc.lpszClassName, L"ck2ModMenager", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, nullptr, nullptr, wc.hInstance, nullptr);
-
         if (!CreateDeviceD3D(hwnd))
         {
             CleanupDeviceD3D();
@@ -127,7 +125,8 @@ public:
 
         ImGui_ImplWin32_Init(hwnd);
         ImGui_ImplDX9_Init(g_pd3dDevice);
-
+        
+        //TRY TO SEARCH BEFORE INIT
         file = serachForMod(ck2ModFolder);
         modState = (bool*)malloc(file.numberOfMods * sizeof(bool));
         modStateForModpack = (bool*)malloc(file.numberOfMods * sizeof(bool));
@@ -159,46 +158,13 @@ public:
             std::cout << "Cannot create config.ini" << std::endl;
             exit(1);
         }
-
-        checkIfModsUsedLineExistIfNotCreate(ck2ModFile);
-        for (int i = 0; i < file.numberOfMods; i++) {
-            modStateForModpack[i] = false;
-            int pos = checkIfModIsInFile(ck2mConfigFile, file.mods[i].string(), LABLE::mod);
-
-            if (pos != -1) {
-                appedNewModInFile(ck2mConfigFile, file.mods[i].string(), LABLE::mod,pos);
-            }
-            //GET FILE LINE AND CHECK MOD STATE
-            if (pos == -1) {
-                int modPos = getModPosInFile(ck2mConfigFile, file.mods[i].string());
-                if (modPos != -1) {
-                    posVec.push_back(modPos);
-                    char modStateChar = readStateOfMod(ck2mConfigFile, modPos);
-                    if (modStateChar == '0') {
-                        modState[i] = false;
-                    }
-                    if (modStateChar == '1') {
-                        modState[i] = true;
-                    }
-                }
-                else if(modPos == -1) { std::cout << "modPos unknown"; exit(1); }
-            }
-        }
-        FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
-        for (int i = 0; i < modInfo.modPos.size(); i++) {
-            if (modInfo.status[i] == '1') {
-                modPackState[i] = true;
-            }
-            else if (modInfo.status[i] == '0') {
-                modPackState[i] = false;
-            }
-        }
-        
+        ck2mSettingsFilePopulated = checkIfck2mSettingsArePoulated();
+        //startUpActions();
 
     }
 
     void start() {
-
+        //STARTUP FUNCTION MUST BE CALL WHEN SETTGINS FILE IS POPULATED WITH DATA
         while (::PeekMessage(&msg, nullptr, 0U, 0U, PM_REMOVE))
         {
             ::TranslateMessage(&msg);
@@ -220,75 +186,88 @@ public:
         ImGui_ImplWin32_NewFrame();
         ImGui::NewFrame();
 
-        ImGui::Begin("ck2 mod menager");
 
-        ImGui::Checkbox("show modPack menu", &showModPackMenu);
-        ImGui::Checkbox("show Mods menu", &showModsMenu);
-
-        if (showModPackMenu) {
-            ImGui::Begin("modPacks");
-            if (ImGui::Button("create new modPacks")) {
-                if (selectModPackButtonClicked == true) {
-                    selectModPackButtonClicked = false;
-                }
-                else if (selectModPackButtonClicked == false) {
-                    selectModPackButtonClicked = true;
-                }
-            }
-            //SHOW MODPACKS ALREDY CREATED
-            if (showModPacks && !selectModPackButtonClicked) {
-                FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
-                for (int i = 0; i < modInfo.modPos.size(); ++i) {
-                    if (ImGui::Checkbox(modInfo.name[i].c_str(), &modPackState[i])) {
-                        chagneStateOfMod(ck2mConfigFile, modInfo.modPos[i], modPackState[i]);
-                        enableDisableModCK2(ck2mConfigFile, ck2ModFile, modInfo.modPos[i], LABLE::modPack, modPackState[i]);
+        if (ck2mSettingsFilePopulated) {
+            ImGui::Begin("ck2 mod menager");
+            ImGui::Checkbox("show modPack menu", &showModPackMenu);
+            ImGui::Checkbox("show Mods menu", &showModsMenu);
+            if (showModPackMenu) {
+                ImGui::Begin("modPacks");
+                if (ImGui::Button("create new modPacks")) {
+                    if (selectModPackButtonClicked == true) {
+                        selectModPackButtonClicked = false;
+                    }
+                    else if (selectModPackButtonClicked == false) {
+                        selectModPackButtonClicked = true;
                     }
                 }
-            }
-        }
-        if (selectModPackButtonClicked) {
-            for (int i = 0; i < file.numberOfMods; ++i) {
-                if (ImGui::Checkbox(file.mods[i].string().c_str(), &modStateForModpack[i])) {
-                    modPosForModPack.push_back(posVec[i]);
-                }
-            }
-            if (ImGui::Button("name Modpack")) {
-                if (showMenuForNameModPack == true) {
-                    showMenuForNameModPack = false;
-                }
-                else if (showMenuForNameModPack == false) {
-                    showMenuForNameModPack = true;
-                }
-            }
-            if (showMenuForNameModPack) {
-                ImGui::InputText("", &modPackNameString, 256);
-                if (ImGui::Button("create Modpack")) {
-                    if (modPosForModPack.size() > 1) {
-                        saveModPackInFile(ck2mConfigFile, modPackNameString, modPosForModPack);
-                        modPosForModPack.clear();
-                        ImGui::Text("modPack created!");
-
-                        FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
-                        modPosForModPack.clear();
-                        modPackNameString.clear();
-                        for (int i = 0; i < file.numberOfMods; i++) {
-                            modStateForModpack[i] = false;
+                //SHOW MODPACKS ALREDY CREATED
+                if (showModPacks && !selectModPackButtonClicked) {
+                    FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
+                    for (int i = 0; i < modInfo.modPos.size(); ++i) {
+                        if (ImGui::Checkbox(modInfo.name[i].c_str(), &modPackState[i])) {
+                            chagneStateOfMod(ck2mConfigFile, modInfo.modPos[i], modPackState[i]);
+                            enableDisableModCK2(ck2mConfigFile, ck2ModFile, modInfo.modPos[i], LABLE::modPack, modPackState[i]);
                         }
                     }
                 }
             }
-        }
+            if (selectModPackButtonClicked) {
+                for (int i = 0; i < file.numberOfMods; ++i) {
+                    if (ImGui::Checkbox(file.mods[i].string().c_str(), &modStateForModpack[i])) {
+                        modPosForModPack.push_back(posVec[i]);
+                    }
+                }
+                if (ImGui::Button("name Modpack")) {
+                    if (showMenuForNameModPack == true) {
+                        showMenuForNameModPack = false;
+                    }
+                    else if (showMenuForNameModPack == false) {
+                        showMenuForNameModPack = true;
+                    }
+                }
+                if (showMenuForNameModPack) {
+                    ImGui::InputText("", &modPackNameString, 256);
+                    if (ImGui::Button("create Modpack")) {
+                        if (modPosForModPack.size() > 1) {
+                            saveModPackInFile(ck2mConfigFile, modPackNameString, modPosForModPack);
+                            modPosForModPack.clear();
+                            ImGui::Text("modPack created!");
 
-        if (showModsMenu) {
-            ImGui::Begin("mods");
-            for (int i = 0; i < file.numberOfMods; ++i) {
-                if (ImGui::Checkbox(file.mods[i].string().c_str(), &modState[i])) {
-                    chagneStateOfMod(ck2mConfigFile, posVec[i]-1, modState[i]);
-                    enableDisableModCK2(ck2mConfigFile, ck2ModFile, posVec[i] - 1, LABLE::mod, modState[i]);
+                            FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
+                            modPosForModPack.clear();
+                            modPackNameString.clear();
+                            for (int i = 0; i < file.numberOfMods; i++) {
+                                modStateForModpack[i] = false;
+                            }
+                        }
+                    }
+                }
+            }
+            if (showModsMenu) {
+                ImGui::Begin("mods");
+                for (int i = 0; i < file.numberOfMods; ++i) {
+                    if (ImGui::Checkbox(file.mods[i].string().c_str(), &modState[i])) {
+                        chagneStateOfMod(ck2mConfigFile, posVec[i] - 1, modState[i]);
+                        enableDisableModCK2(ck2mConfigFile, ck2ModFile, posVec[i] - 1, LABLE::mod, modState[i]);
+                    }
                 }
             }
         }
-
+        else {
+            //Make it in function can be reuse later
+            ImGui::Begin("Settings");
+            ImGui::Text("Type ck2 mod folder path");
+            ImGui::InputText("##folder", &ck2ModFolder, 256);
+            ImGui::Text("Type ck2 settings path u can find it in {Documents\Paradox Interactive\Crusader Kings II}");
+            ImGui::InputText("##file", &ck2ModFile, 256);
+            if (ImGui::Button("append")) {
+                if (ck2ModFolder.length() > 1 && ck2ModFile.length() > 1) {
+                    populateck2mSettings(ck2ModFile, ck2ModFolder);
+                    ck2mSettingsFilePopulated = checkIfck2mSettingsArePoulated();
+                }
+            }
+        }
 
         ImGui::End();
 

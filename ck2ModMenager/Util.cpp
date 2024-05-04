@@ -67,11 +67,88 @@ void Util::firstRunSettings(std::string f_ck2mConfigFile, std::string f_ck2mModF
 
 bool Util::checkIfck2mSettingsFileExistOrCreate(){
 	if (!std::filesystem::exists(ck2mSettings)) {
-		std::ofstream File(ck2mSettings, std::ios::out);
-		if (!std::filesystem::exists(ck2mSettings)) {
+		std::ofstream File(ck2mSettings);
+		if (!std::filesystem::exists(ck2mSettings))
 			return false;
-		}
+
+		File << "ck2_mod_folder_path=\n";
+		File << "ck2_settings_folder_path=\n";
 		return true;
 	}
 	return true;
 }
+
+bool Util::checkIfck2mSettingsArePoulated() {
+	std::ifstream File(ck2mSettings);
+	if (File.is_open()) {
+		std::string line;
+		while (getline(File, line)) {
+			//FOR NOW SOLUTION 
+			if (line.length() <= ck2_mod_folder_path_lenght)
+				return false;
+		}
+	}
+	else {
+		std::cout << "something went wrong {checkIfck2mSettingsArePoulated}";
+		exit(1);
+	}
+
+	return true;
+}
+
+void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder) {
+	std::fstream File(ck2mSettings, std::ios::in | std::ios::out);
+	if (File.is_open()) {
+
+		std::string line;
+		std::vector<std::string> LineBuffer;
+		while (getline(File, line)) {
+			LineBuffer.push_back(line);
+		}
+		if (LineBuffer[0].length() > ck2_mod_folder_path_lenght) {
+			//20 is lenght of ck2_mod_folder_path
+			LineBuffer[0].erase(ck2_mod_folder_path_lenght + LineBuffer[0].length() - ck2_mod_folder_path_lenght);
+		}
+		if (LineBuffer[1].length() > ck2_settings_folder_path) {
+			LineBuffer[1].erase(ck2_settings_folder_path + LineBuffer[1].length() - ck2_settings_folder_path);
+		}
+		LineBuffer[0] += ck2modFolder;
+		LineBuffer[1] += ck2modFile;
+
+		File.clear();
+		File.seekp(0, std::ios::beg);
+		for (int i = 0; i < LineBuffer.size(); i++) {
+			File << LineBuffer[i] + '\n';
+		}
+	}
+	else {
+		std::cout << "something went wrong {populateck2mSettings}";
+		exit(1);
+	}
+}
+
+/*
+void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder) {
+	std::fstream File(ck2ModFile, std::ios::in | std::ios::out);
+	if (File.is_open()) {
+
+		std::string line;
+		std::vector<std::string> LineBuffer;
+		while (getline(File, line)) {
+			LineBuffer.push_back(line);
+		}
+		for (int i = 0; i < LineBuffer.size(); i++) {
+			if (LineBuffer[i] == "ck2_mod_folder_path=") {
+
+			}
+			if (LineBuffer[i] == "ck2_settings_folder_path=") {
+
+			}
+		}
+	}
+	else {
+		std::cout << "something went wrong {populateck2mSettings}";
+		exit(1);
+	}
+}
+*/
