@@ -150,6 +150,11 @@ public:
             exit(1);
         }
 
+        if (!checkIfck2mSettingsFileExistOrCreate()) {
+            std::cout << "Cannot create ck2msettings.ini" << std::endl;
+            exit(1);
+        }
+
         if (!checkIfModDataFolderExistOrCreate()) {
             std::cout << "Cannot create config.ini" << std::endl;
             exit(1);

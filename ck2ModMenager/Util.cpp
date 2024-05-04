@@ -59,3 +59,19 @@ void Util::checkIfModsUsedLineExistIfNotCreate(std::string ck2ModFile) {
 		exit(1);
 	}
 }
+
+void Util::firstRunSettings(std::string f_ck2mConfigFile, std::string f_ck2mModFolder, std::string
+	f_ck2ModFile) {
+
+}
+
+bool Util::checkIfck2mSettingsFileExistOrCreate(){
+	if (!std::filesystem::exists(ck2mSettings)) {
+		std::ofstream File(ck2mSettings, std::ios::out);
+		if (!std::filesystem::exists(ck2mSettings)) {
+			return false;
+		}
+		return true;
+	}
+	return true;
+}
