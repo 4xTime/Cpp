@@ -125,41 +125,23 @@ public:
 
         ImGui_ImplWin32_Init(hwnd);
         ImGui_ImplDX9_Init(g_pd3dDevice);
-        
-        //TRY TO SEARCH BEFORE INIT
-        file = serachForMod(ck2ModFolder);
-        modState = (bool*)malloc(file.numberOfMods * sizeof(bool));
-        modStateForModpack = (bool*)malloc(file.numberOfMods * sizeof(bool));
-        modPackState = (bool*)malloc(100 * sizeof(bool));
-
-        if (modState == NULL) {
-            std::cout << "MODS IS NULL" << std::endl;
-            exit(1);
-        }
-        if (modPackState == NULL) {
-            std::cout << "MODPACK IS NULL" << std::endl;
-            exit(1);
-        }
-        if (modPackState == NULL) {
-            std::cout << "MOD STATE FOR MODPACK IS NULL" << std::endl;
-            exit(1);
-        }
-        if (!checkIfDirExistOrCreate()) {
-            std::cout << "Cannot create ck2m mod folder" << std::endl;
-            exit(1);
-        }
 
         if (!checkIfck2mSettingsFileExistOrCreate()) {
             std::cout << "Cannot create ck2msettings.ini" << std::endl;
             exit(1);
         }
 
-        if (!checkIfModDataFolderExistOrCreate()) {
-            std::cout << "Cannot create config.ini" << std::endl;
-            exit(1);
-        }
         ck2mSettingsFilePopulated = checkIfck2mSettingsArePoulated();
-        //startUpActions();
+        if (ck2mSettingsFilePopulated) {
+            getPathsFromCk2mSettgins();
+            if (allocateMem()) {
+                startUpActions();
+            }
+            else {
+                std::cout << "mem alloc went wrong {allocateMem}";
+                exit(1);
+            }
+        }
 
     }
 
@@ -265,6 +247,16 @@ public:
                 if (ck2ModFolder.length() > 1 && ck2ModFile.length() > 1) {
                     populateck2mSettings(ck2ModFile, ck2ModFolder);
                     ck2mSettingsFilePopulated = checkIfck2mSettingsArePoulated();
+                    //IF RUN FIRST TIME...
+                    if (ck2mSettingsFilePopulated) {
+                        if (allocateMem()) {
+                            startUpActions();
+                        }
+                        else {
+                            std::cout << "mem alloc went wrong {allocateMem}";
+                            exit(1);
+                        }
+                    }
                 }
             }
         }

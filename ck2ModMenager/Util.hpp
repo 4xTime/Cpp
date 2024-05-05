@@ -29,4 +29,5 @@ protected:
 	//-------- TEST FUNCTIONS MEY NOT WORK AS INTENDED IN SOME CASES ----------------
 	bool checkIfck2mSettingsArePoulated();
 	void populateck2mSettings(std::string ck2modFile, std::string ck2modFolder);
+	void getPathsFromCk2mSettgins();
 };

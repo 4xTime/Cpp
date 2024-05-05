@@ -101,28 +101,48 @@ void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder)
 	if (File.is_open()) {
 
 		std::string line;
-		std::vector<std::string> LineBuffer;
+		std::vector<std::string> lineBuffer;
 		while (getline(File, line)) {
-			LineBuffer.push_back(line);
+			lineBuffer.push_back(line);
 		}
-		if (LineBuffer[0].length() > ck2_mod_folder_path_lenght) {
+		if (lineBuffer[0].length() > ck2_mod_folder_path_lenght) {
 			//20 is lenght of ck2_mod_folder_path
-			LineBuffer[0].erase(ck2_mod_folder_path_lenght + LineBuffer[0].length() - ck2_mod_folder_path_lenght);
+			lineBuffer[0].erase(ck2_mod_folder_path_lenght + lineBuffer[0].length() - ck2_mod_folder_path_lenght);
 		}
-		if (LineBuffer[1].length() > ck2_settings_folder_path) {
-			LineBuffer[1].erase(ck2_settings_folder_path + LineBuffer[1].length() - ck2_settings_folder_path);
+		if (lineBuffer[1].length() > ck2_settings_folder_path) {
+			lineBuffer[1].erase(ck2_settings_folder_path + lineBuffer[1].length() - ck2_settings_folder_path);
 		}
-		LineBuffer[0] += ck2modFolder;
-		LineBuffer[1] += ck2modFile;
+		lineBuffer[0] += ck2modFolder;
+		lineBuffer[1] += ck2modFile;
 
 		File.clear();
 		File.seekp(0, std::ios::beg);
-		for (int i = 0; i < LineBuffer.size(); i++) {
-			File << LineBuffer[i] + '\n';
+		for (int i = 0; i < lineBuffer.size(); i++) {
+			File << lineBuffer[i] + '\n';
 		}
 	}
 	else {
 		std::cout << "something went wrong {populateck2mSettings}";
+		exit(1);
+	}
+}
+
+void Util::getPathsFromCk2mSettgins() {
+	std::ifstream File(ck2mSettings);
+	if (File.is_open()) {
+		std::string line;
+		std::vector<std::string>lineBuffer;
+		while (getline(File, line)) {
+			lineBuffer.push_back(line);
+		}
+		lineBuffer[0].erase(lineBuffer[0].begin(),lineBuffer[0].begin()+ck2_mod_folder_path_lenght);
+		lineBuffer[1].erase(lineBuffer[1].begin(), lineBuffer[1].begin() + ck2_settings_folder_path);
+
+		ck2ModFolder = lineBuffer[0];
+		ck2ModFile = lineBuffer[1];
+	}
+	else {
+		std::cout << "something went wrong {getPathsFromCk2mSettgins}";
 		exit(1);
 	}
 }

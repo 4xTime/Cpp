@@ -37,6 +37,8 @@ protected:
 	void saveModPackInFile(std::string configFile, std::string modPackName, std::vector<int>linePosOfMods);
 	FileConfigPos getModPackPosNameStatus(std::string configFile);
 	void enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable,bool state);
+
+	bool allocateMem();
 	void startUpActions();
 private:
 	std::vector<int> getVectroOfModPos(std::string posString);

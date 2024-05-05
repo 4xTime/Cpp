@@ -341,6 +341,14 @@ std::vector<int> fileMenager::getVectroOfModPos(std::string posString) {
 }
 
 void fileMenager::startUpActions(){
+	if (!checkIfDirExistOrCreate()) {
+		std::cout << "Cannot create ck2m mod folder" << std::endl;
+	}
+	if (!checkIfModDataFolderExistOrCreate()) {
+		std::cout << "Cannot create config.ini" << std::endl;
+		exit(1);
+	}
+
 	checkIfModsUsedLineExistIfNotCreate(ck2ModFile);
 	for (int i = 0; i < file.numberOfMods; i++) {
 		modStateForModpack[i] = false;
@@ -374,4 +382,25 @@ void fileMenager::startUpActions(){
 			modPackState[i] = false;
 		}
 	}
+}
+
+bool fileMenager::allocateMem() {
+	file = serachForMod(ck2ModFolder);
+	modState = (bool*)malloc(file.numberOfMods * sizeof(bool));
+	modStateForModpack = (bool*)malloc(file.numberOfMods * sizeof(bool));
+	modPackState = (bool*)malloc(100 * sizeof(bool));
+
+	if (modState == NULL) {
+		std::cout << "MODS IS NULL" << std::endl;
+		return false;
+	}
+	if (modPackState == NULL) {
+		std::cout << "MODPACK IS NULL" << std::endl;
+		return false;
+	}
+	if (modPackState == NULL) {
+		std::cout << "MOD STATE FOR MODPACK IS NULL" << std::endl;
+		return false;
+	}
+	return true;
 }
