@@ -404,3 +404,26 @@ bool fileMenager::allocateMem() {
 	}
 	return true;
 }
+
+void fileMenager::changeSettings(bool firstRun) {
+	ImGui::Begin("Settings");
+	ImGui::Text("Type ck2 mod folder path");
+	ImGui::InputText("##folder", &ck2ModFolder, 256);
+	ImGui::Text("Type ck2 settings path u can find it in {Documents\Paradox Interactive\Crusader Kings II}");
+	ImGui::InputText("##file", &ck2ModFile, 256);
+	if (ImGui::Button("append")) {
+		if (ck2ModFolder.length() > 1 && ck2ModFile.length() > 1) {
+			populateck2mSettings(ck2ModFile, ck2ModFolder);
+			//IF RUN FIRST TIME...
+			if (checkIfck2mSettingsArePoulated() && firstRun) {
+				if (allocateMem()) {
+					startUpActions();
+				}
+				else {
+					std::cout << "mem alloc went wrong {allocateMem}";
+					exit(1);
+				}
+			}
+		}
+	}
+}

@@ -14,6 +14,9 @@ protected:
 	const int ck2_mod_folder_path_lenght = 20;
 	const int ck2_settings_folder_path = 25;
 
+	const std::string modFolderPathPrefix="ck2_mod_folder_path=";
+	const std::string settingsPathPrefix = "ck2_settings_folder_path=";
+
 	std::string ck2mSettings = std::filesystem::current_path().string() + "\\ck2mModFolder\\ck2msettings.ini";
 	std::string ck2mConfigFile = std::filesystem::current_path().string() + "\\ck2mModFolder\\config.ini";
 	std::string ck2mModFolder = std::filesystem::current_path().string() + "\\ck2mModFolder";
@@ -26,6 +29,7 @@ protected:
 	bool checkIfModDataFolderExistOrCreate();
 	void checkIfModsUsedLineExistIfNotCreate(std::string ck2ModFile);
 	bool checkIfck2mSettingsFileExistOrCreate();
+	void clearFileData(std::string path);
 	//-------- TEST FUNCTIONS MEY NOT WORK AS INTENDED IN SOME CASES ----------------
 	bool checkIfck2mSettingsArePoulated();
 	void populateck2mSettings(std::string ck2modFile, std::string ck2modFolder);

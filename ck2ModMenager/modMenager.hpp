@@ -1,9 +1,4 @@
 #pragma once
-#include "imgui.h"
-#include "imgui_impl_dx9.h"
-#include "imgui_impl_win32.h"
-#include "misc/cpp/imgui_stdlib.h"
-#include <d3d9.h>
 #include <tchar.h>
 #include "fileMenager.hpp"
 
@@ -98,7 +93,7 @@ private:
     bool selectModPackButtonClicked = false;
     bool showMenuForNameModPack = false;
     bool showModPacks = true;
-
+    bool showSettingsMenu = false;
 
     bool ck2mSettingsFilePopulated = false;
 public:
@@ -173,6 +168,10 @@ public:
             ImGui::Begin("ck2 mod menager");
             ImGui::Checkbox("show modPack menu", &showModPackMenu);
             ImGui::Checkbox("show Mods menu", &showModsMenu);
+            ImGui::Checkbox("change settings", &showSettingsMenu);
+            if (showSettingsMenu) {
+                changeSettings(false);
+            }
             if (showModPackMenu) {
                 ImGui::Begin("modPacks");
                 if (ImGui::Button("create new modPacks")) {
@@ -238,27 +237,8 @@ public:
         }
         else {
             //Make it in function can be reuse later
-            ImGui::Begin("Settings");
-            ImGui::Text("Type ck2 mod folder path");
-            ImGui::InputText("##folder", &ck2ModFolder, 256);
-            ImGui::Text("Type ck2 settings path u can find it in {Documents\Paradox Interactive\Crusader Kings II}");
-            ImGui::InputText("##file", &ck2ModFile, 256);
-            if (ImGui::Button("append")) {
-                if (ck2ModFolder.length() > 1 && ck2ModFile.length() > 1) {
-                    populateck2mSettings(ck2ModFile, ck2ModFolder);
-                    ck2mSettingsFilePopulated = checkIfck2mSettingsArePoulated();
-                    //IF RUN FIRST TIME...
-                    if (ck2mSettingsFilePopulated) {
-                        if (allocateMem()) {
-                            startUpActions();
-                        }
-                        else {
-                            std::cout << "mem alloc went wrong {allocateMem}";
-                            exit(1);
-                        }
-                    }
-                }
-            }
+            changeSettings(true);
+            ck2mSettingsFilePopulated = checkIfck2mSettingsArePoulated();
         }
 
         ImGui::End();

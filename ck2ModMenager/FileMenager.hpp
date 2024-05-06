@@ -1,4 +1,9 @@
 #pragma once
+#include "imgui.h"
+#include "imgui_impl_dx9.h"
+#include "imgui_impl_win32.h"
+#include "misc/cpp/imgui_stdlib.h"
+#include <d3d9.h>
 #include <vector>
 #include <string>
 #include "Util.hpp"
@@ -31,15 +36,17 @@ protected:
 	Files serachForMod(std::string modFolder);
 	int checkIfModIsInFile(std::string configFile, std::string searchMod, LABLE lable);
 	int getModPosInFile(std::string configFile, std::string searchMod);
+	FileConfigPos getModPackPosNameStatus(std::string configFile);
 	char readStateOfMod(std::string configFile, int line);
 	void appedNewModInFile(std::string configFile, std::string searchMod, LABLE lable, int line);
 	void chagneStateOfMod(std::string configFile, int lineNum, bool state);
+	void enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable, bool state);
 	void saveModPackInFile(std::string configFile, std::string modPackName, std::vector<int>linePosOfMods);
-	FileConfigPos getModPackPosNameStatus(std::string configFile);
-	void enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable,bool state);
-
+	
 	bool allocateMem();
 	void startUpActions();
+
+	void changeSettings(bool firstRun);
 private:
 	std::vector<int> getVectroOfModPos(std::string posString);
 };

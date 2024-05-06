@@ -8,6 +8,7 @@
 //BUG WITH DUPLICATE SETTINGS WHILE REMOVING MOD
 //MAKE DELETE BUTTON FOR MODPACK
 //made button for chagne settings 
+//handle a wrong path 
 int main(){
 	modMenager MM;
 

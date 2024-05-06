@@ -71,8 +71,8 @@ bool Util::checkIfck2mSettingsFileExistOrCreate(){
 		if (!std::filesystem::exists(ck2mSettings))
 			return false;
 
-		File << "ck2_mod_folder_path=\n";
-		File << "ck2_settings_folder_path=\n";
+		File << modFolderPathPrefix+'\n';
+		File << settingsPathPrefix+'\n';
 		return true;
 	}
 	return true;
@@ -105,16 +105,16 @@ void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder)
 		while (getline(File, line)) {
 			lineBuffer.push_back(line);
 		}
-		if (lineBuffer[0].length() > ck2_mod_folder_path_lenght) {
+		if (lineBuffer[0].length() > ck2_mod_folder_path_lenght || lineBuffer[1].length() > ck2_settings_folder_path) {
 			//20 is lenght of ck2_mod_folder_path
-			lineBuffer[0].erase(ck2_mod_folder_path_lenght + lineBuffer[0].length() - ck2_mod_folder_path_lenght);
+			lineBuffer[0] = modFolderPathPrefix + ck2modFolder;
+			lineBuffer[1] = settingsPathPrefix + ck2modFile;
+			clearFileData(ck2mSettings);
 		}
-		if (lineBuffer[1].length() > ck2_settings_folder_path) {
-			lineBuffer[1].erase(ck2_settings_folder_path + lineBuffer[1].length() - ck2_settings_folder_path);
+		else {
+			lineBuffer[0] += ck2modFolder;
+			lineBuffer[1] += ck2modFile;
 		}
-		lineBuffer[0] += ck2modFolder;
-		lineBuffer[1] += ck2modFile;
-
 		File.clear();
 		File.seekp(0, std::ios::beg);
 		for (int i = 0; i < lineBuffer.size(); i++) {
@@ -146,7 +146,10 @@ void Util::getPathsFromCk2mSettgins() {
 		exit(1);
 	}
 }
-
+void Util::clearFileData(std::string path) {
+	std::ofstream File(path, std::ios::out | std::ios::trunc);
+	File.close();
+}
 /*
 void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder) {
 	std::fstream File(ck2ModFile, std::ios::in | std::ios::out);
