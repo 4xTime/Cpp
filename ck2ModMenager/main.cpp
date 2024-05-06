@@ -7,8 +7,7 @@
 //IF MOD IS NOT PRESENT IN CK2 MOD FOLDER DELETE
 //BUG WITH DUPLICATE SETTINGS WHILE REMOVING MOD
 //MAKE DELETE BUTTON FOR MODPACK
-//made button for chagne settings 
-//handle a wrong path 
+//text need to appear for more then 1 sec
 int main(){
 	modMenager MM;
 

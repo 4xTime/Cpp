@@ -412,7 +412,8 @@ void fileMenager::changeSettings(bool firstRun) {
 	ImGui::Text("Type ck2 settings path u can find it in {Documents\Paradox Interactive\Crusader Kings II}");
 	ImGui::InputText("##file", &ck2ModFile, 256);
 	if (ImGui::Button("append")) {
-		if (ck2ModFolder.length() > 1 && ck2ModFile.length() > 1) {
+		bool rightPath = handleWrongPath(ck2ModFolder, ck2ModFile);
+		if (ck2ModFolder.length() > 1 && ck2ModFile.length() > 1 && rightPath) {
 			populateck2mSettings(ck2ModFile, ck2ModFolder);
 			//IF RUN FIRST TIME...
 			if (checkIfck2mSettingsArePoulated() && firstRun) {
@@ -425,5 +426,12 @@ void fileMenager::changeSettings(bool firstRun) {
 				}
 			}
 		}
+		else {
+			ImGui::Text("Wrong path");
+		}
 	}
+}
+
+void fileMenager::checkDeletedModsAndRemoveFromCk2ModMenager() {
+	Files mods = serachForMod(ck2ModFolder);
 }

@@ -42,7 +42,8 @@ protected:
 	void chagneStateOfMod(std::string configFile, int lineNum, bool state);
 	void enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable, bool state);
 	void saveModPackInFile(std::string configFile, std::string modPackName, std::vector<int>linePosOfMods);
-	
+	void checkDeletedModsAndRemoveFromCk2ModMenager();
+
 	bool allocateMem();
 	void startUpActions();
 

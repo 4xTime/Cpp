@@ -129,6 +129,8 @@ public:
         ck2mSettingsFilePopulated = checkIfck2mSettingsArePoulated();
         if (ck2mSettingsFilePopulated) {
             getPathsFromCk2mSettgins();
+            checkDeletedModsAndRemoveFromCk2ModMenager();
+            exit(1);
             if (allocateMem()) {
                 startUpActions();
             }
@@ -236,7 +238,6 @@ public:
             }
         }
         else {
-            //Make it in function can be reuse later
             changeSettings(true);
             ck2mSettingsFilePopulated = checkIfck2mSettingsArePoulated();
         }

@@ -60,10 +60,6 @@ void Util::checkIfModsUsedLineExistIfNotCreate(std::string ck2ModFile) {
 	}
 }
 
-void Util::firstRunSettings(std::string f_ck2mConfigFile, std::string f_ck2mModFolder, std::string
-	f_ck2ModFile) {
-
-}
 
 bool Util::checkIfck2mSettingsFileExistOrCreate(){
 	if (!std::filesystem::exists(ck2mSettings)) {
@@ -146,10 +142,28 @@ void Util::getPathsFromCk2mSettgins() {
 		exit(1);
 	}
 }
+
 void Util::clearFileData(std::string path) {
 	std::ofstream File(path, std::ios::out | std::ios::trunc);
 	File.close();
 }
+
+bool Util::handleWrongPath(std::string ck2ModFolder, std::string ck2ModFile) {
+	//ModFolder must end with "mod"
+	//ModFile must end with "settings.txt"
+	std::size_t found = ck2ModFolder.find("mod");
+
+	if (found != std::string::npos && std::filesystem::exists(ck2ModFolder)) {
+		found = ck2ModFile.find("settings.txt");
+		if (found != std::string::npos&& std::filesystem::exists(ck2ModFile)) {
+			return true;
+		}
+	}
+
+	
+	return false;
+}
+
 /*
 void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder) {
 	std::fstream File(ck2ModFile, std::ios::in | std::ios::out);
