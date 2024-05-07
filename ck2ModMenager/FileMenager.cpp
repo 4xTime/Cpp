@@ -432,6 +432,43 @@ void fileMenager::changeSettings(bool firstRun) {
 	}
 }
 
+void fileMenager::populateck2mSettings(std::string ck2modFile, std::string ck2modFolder) {
+	std::fstream File(ck2mSettings, std::ios::in | std::ios::out);
+	if (File.is_open()) {
+
+		std::string line;
+		std::vector<std::string> lineBuffer;
+		while (getline(File, line)) {
+			lineBuffer.push_back(line);
+		}
+		if (lineBuffer[0].length() > ck2_mod_folder_path_lenght || lineBuffer[1].length() > ck2_settings_folder_path) {
+			//20 is lenght of ck2_mod_folder_path
+			lineBuffer[0] = modFolderPathPrefix + ck2modFolder;
+			lineBuffer[1] = settingsPathPrefix + ck2modFile;
+			clearFileData(ck2mSettings);
+		}
+		else {
+			lineBuffer[0] += ck2modFolder;
+			lineBuffer[1] += ck2modFile;
+		}
+		File.clear();
+		File.seekp(0, std::ios::beg);
+		for (int i = 0; i < lineBuffer.size(); i++) {
+			File << lineBuffer[i] + '\n';
+		}
+	}
+	else {
+		std::cout << "something went wrong {populateck2mSettings}";
+		exit(1);
+	}
+}
+
+void fileMenager::deleteModFromCk2Menager(int lineNum) {
+	//delete from modpacks too
+}
+
 void fileMenager::checkDeletedModsAndRemoveFromCk2ModMenager() {
 	Files mods = serachForMod(ck2ModFolder);
+	std::vector<std::string> DeletedMods = lookForDeletedMods(mods.mods);
+	//make function that delete mods from mod menager
 }

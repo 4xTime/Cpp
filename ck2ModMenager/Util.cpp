@@ -92,36 +92,6 @@ bool Util::checkIfck2mSettingsArePoulated() {
 	return true;
 }
 
-void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder) {
-	std::fstream File(ck2mSettings, std::ios::in | std::ios::out);
-	if (File.is_open()) {
-
-		std::string line;
-		std::vector<std::string> lineBuffer;
-		while (getline(File, line)) {
-			lineBuffer.push_back(line);
-		}
-		if (lineBuffer[0].length() > ck2_mod_folder_path_lenght || lineBuffer[1].length() > ck2_settings_folder_path) {
-			//20 is lenght of ck2_mod_folder_path
-			lineBuffer[0] = modFolderPathPrefix + ck2modFolder;
-			lineBuffer[1] = settingsPathPrefix + ck2modFile;
-			clearFileData(ck2mSettings);
-		}
-		else {
-			lineBuffer[0] += ck2modFolder;
-			lineBuffer[1] += ck2modFile;
-		}
-		File.clear();
-		File.seekp(0, std::ios::beg);
-		for (int i = 0; i < lineBuffer.size(); i++) {
-			File << lineBuffer[i] + '\n';
-		}
-	}
-	else {
-		std::cout << "something went wrong {populateck2mSettings}";
-		exit(1);
-	}
-}
 
 void Util::getPathsFromCk2mSettgins() {
 	std::ifstream File(ck2mSettings);
@@ -164,6 +134,40 @@ bool Util::handleWrongPath(std::string ck2ModFolder, std::string ck2ModFile) {
 	return false;
 }
 
+std::vector<std::string> Util::lookForDeletedMods(std::vector<std::filesystem::path> mods){
+	std::ifstream File(ck2mConfigFile);
+	std::vector<std::string>deletedMods;
+
+	if (File.is_open()) {
+		std::vector<std::string>modsInModMenager;
+		bool startRead = false;
+			
+		int indexPlus = 0;
+		int indexMinus = 0;
+
+		std::string line;
+
+		while (getline(File, line)) {
+			if (startRead == true) {
+				modsInModMenager.push_back(line.erase(line.size()-2));
+			}
+			if (line == "[Mods]")
+				startRead = true;
+		}
+		for (size_t i = 0; i < modsInModMenager.size();i++) {
+			size_t notFound = modsInModMenager[i].find(mods[i].string());
+			if (notFound == std::string::npos) {
+				deletedMods.push_back(modsInModMenager[i]);
+			}
+		}
+	}
+	else {
+		std::cout << "something wrong {lookForDeletedMods}";
+		exit(1);
+	}
+
+	return deletedMods;
+}
 /*
 void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder) {
 	std::fstream File(ck2ModFile, std::ios::in | std::ios::out);

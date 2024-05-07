@@ -14,7 +14,7 @@ struct Files {
 	int numberOfMods;
 	Files(std::vector<std::filesystem::path> mods= std::vector<std::filesystem::path>(0), int numberOfMods = 0) :mods(mods), numberOfMods(numberOfMods) {}
 };
-//NOT USED RIGHT NOW
+
 struct FileConfigPos {
 	std::vector<int> modPos;
 	std::vector<char> status;
@@ -42,7 +42,9 @@ protected:
 	void chagneStateOfMod(std::string configFile, int lineNum, bool state);
 	void enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable, bool state);
 	void saveModPackInFile(std::string configFile, std::string modPackName, std::vector<int>linePosOfMods);
+	void populateck2mSettings(std::string ck2modFile, std::string ck2modFolder);
 	void checkDeletedModsAndRemoveFromCk2ModMenager();
+	void deleteModFromCk2Menager(int lineNum);
 
 	bool allocateMem();
 	void startUpActions();

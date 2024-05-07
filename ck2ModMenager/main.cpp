@@ -3,6 +3,7 @@
 #include "modMenager.hpp"
 #include "Util.hpp"
 
+//Make function that allow user to edit modpack
 //search for mods that is enable in menager file and chagne it in ck2 settings file
 //IF MOD IS NOT PRESENT IN CK2 MOD FOLDER DELETE
 //BUG WITH DUPLICATE SETTINGS WHILE REMOVING MOD
