@@ -129,7 +129,6 @@ public:
         if (ck2mSettingsFilePopulated) {
             getPathsFromCk2mSettgins();
             checkDeletedModsAndRemoveFromCk2ModMenager();
-            exit(1);
             if (allocateMem()) {
                 startUpActions();
             }
@@ -147,8 +146,10 @@ public:
         {
             ::TranslateMessage(&msg);
             ::DispatchMessage(&msg);
-            if (msg.message == WM_QUIT)
+            if (msg.message == WM_QUIT) {
+                modMenager::~modMenager();
                 exit(1);
+            }
         }
         // Handle window resize (we don't resize directly in the WM_SIZE handler)
         if (g_ResizeWidth != 0 && g_ResizeHeight != 0)
@@ -264,6 +265,10 @@ public:
             ResetDevice();
     }
     ~modMenager() {
+        free(modState);
+        free(modStateForModpack);
+        free(modPackState);
+
         ImGui_ImplDX9_Shutdown();
         ImGui_ImplWin32_Shutdown();
         ImGui::DestroyContext();
