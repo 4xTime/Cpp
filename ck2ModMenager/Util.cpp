@@ -139,26 +139,35 @@ std::vector<std::string> Util::lookForDeletedMods(std::vector<std::filesystem::p
 	std::vector<std::string>deletedMods;
 
 	if (File.is_open()) {
-		std::vector<std::string>modsInModMenager;
+		std::vector<std::pair<int,std::string>>modsInModMenager;
 		bool startRead = false;
 			
-		int indexPlus = 0;
-		int indexMinus = 0;
+		const int founded = 1;
+		const int notFounded = 0;
 
 		std::string line;
 
 		while (getline(File, line)) {
 			if (startRead == true) {
-				modsInModMenager.push_back(line.erase(line.size()-2));
+				modsInModMenager.push_back(std::make_pair(notFounded,line.erase(line.size()-2)));
 			}
 			if (line == "[Mods]")
 				startRead = true;
 		}
 		for (size_t i = 0; i < modsInModMenager.size();i++) {
-			size_t notFound = modsInModMenager[i].find(mods[i].string());
-			if (notFound == std::string::npos) {
-				deletedMods.push_back(modsInModMenager[i]);
+			for (size_t j = 0; j< mods.size(); j++) {
+				size_t Found = modsInModMenager[i].second.find(mods[j].string());
+				if (Found != std::string::npos) {
+					modsInModMenager[i].first = founded;
+					break;
+				}
 			}
+		}
+		std::sort(modsInModMenager.begin(), modsInModMenager.end());
+		for (size_t i = 0; i < modsInModMenager.size(); i++) {
+			if (modsInModMenager[i].first == 1)
+				break;
+			deletedMods.push_back(modsInModMenager[i].second);
 		}
 	}
 	else {

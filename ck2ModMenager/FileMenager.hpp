@@ -43,8 +43,11 @@ protected:
 	void enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable, bool state);
 	void saveModPackInFile(std::string configFile, std::string modPackName, std::vector<int>linePosOfMods);
 	void populateck2mSettings(std::string ck2modFile, std::string ck2modFolder);
+	
 	void checkDeletedModsAndRemoveFromCk2ModMenager();
-	void deleteModFromCk2Menager(int lineNum);
+	void deleteModFromCk2Menager(const int lineNum);
+
+	void deleteModFromModpack(const int lineNum, std::string modPackName = "");
 
 	bool allocateMem();
 	void startUpActions();

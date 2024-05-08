@@ -417,6 +417,7 @@ void fileMenager::changeSettings(bool firstRun) {
 			populateck2mSettings(ck2ModFile, ck2ModFolder);
 			//IF RUN FIRST TIME...
 			if (checkIfck2mSettingsArePoulated() && firstRun) {
+				checkDeletedModsAndRemoveFromCk2ModMenager();
 				if (allocateMem()) {
 					startUpActions();
 				}
@@ -463,12 +464,28 @@ void fileMenager::populateck2mSettings(std::string ck2modFile, std::string ck2mo
 	}
 }
 
-void fileMenager::deleteModFromCk2Menager(int lineNum) {
+void fileMenager::deleteModFromCk2Menager(const int lineNum) {
 	//delete from modpacks too
 }
 
 void fileMenager::checkDeletedModsAndRemoveFromCk2ModMenager() {
 	Files mods = serachForMod(ck2ModFolder);
 	std::vector<std::string> DeletedMods = lookForDeletedMods(mods.mods);
+	
+	for (const auto i : DeletedMods) {
+		deleteModFromCk2Menager(getModPosInFile(ck2mConfigFile, i));
+	}
+	//exit(1);
 	//make function that delete mods from mod menager
+}
+
+void fileMenager::deleteModFromModpack(const int lineNum,std::string modPackName) {
+	std::ifstream File(ck2mConfigFile);
+	if (File.is_open()) {
+
+	}
+	else {
+		std::cout << "something went wrong {deleteModFromModpack}";
+		exit(1);
+	}
 }
