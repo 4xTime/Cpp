@@ -27,7 +27,7 @@ bool Util:: checkIfModDataFolderExistOrCreate() {
 	return true;
 }
 
-void Util::checkIfModsUsedLineExistIfNotCreate(std::string ck2ModFile) {
+void Util::checkIfModsUsedLineExistIfNotCreate() {
 	std::fstream FileCk2ModFile(ck2ModFile, std::ios::in | std::ios::out);
 	int lineItteratr = 0;
 	std::string line;
@@ -118,7 +118,7 @@ void Util::clearFileData(std::string path) {
 	File.close();
 }
 
-bool Util::handleWrongPath(std::string ck2ModFolder, std::string ck2ModFile) {
+bool Util::handleWrongPath() {
 	//ModFolder must end with "mod"
 	//ModFile must end with "settings.txt"
 	std::size_t found = ck2ModFolder.find("mod");
@@ -177,6 +177,8 @@ std::vector<std::string> Util::lookForDeletedMods(std::vector<std::filesystem::p
 
 	return deletedMods;
 }
+
+
 /*
 void Util::populateck2mSettings(std::string ck2modFile,std::string ck2modFolder) {
 	std::fstream File(ck2ModFile, std::ios::in | std::ios::out);

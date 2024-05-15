@@ -29,12 +29,12 @@ protected:
 
 	bool checkIfDirExistOrCreate();
 	bool checkIfModDataFolderExistOrCreate();
-	void checkIfModsUsedLineExistIfNotCreate(std::string ck2ModFile);
+	void checkIfModsUsedLineExistIfNotCreate();
 	bool checkIfck2mSettingsFileExistOrCreate();
 
 
 	void clearFileData(std::string path);
-	bool handleWrongPath(std::string ck2ModFolder,std::string ck2ModFile);
+	bool handleWrongPath();
 	
 	//-------- TEST FUNCTIONS MEY NOT WORK AS INTENDED IN SOME CASES ----------------
 	bool checkIfck2mSettingsArePoulated();

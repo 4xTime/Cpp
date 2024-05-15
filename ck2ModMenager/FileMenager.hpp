@@ -33,16 +33,16 @@ protected:
 	bool* modPackState;
 	std::vector<int> posVec;
 
-	Files serachForMod(std::string modFolder);
-	int checkIfModIsInFile(std::string configFile, std::string searchMod, LABLE lable);
-	int getModPosInFile(std::string configFile, std::string searchMod);
-	FileConfigPos getModPackPosNameStatus(std::string configFile);
-	char readStateOfMod(std::string configFile, int line);
-	void appedNewModInFile(std::string configFile, std::string searchMod, LABLE lable, int line);
-	void chagneStateOfMod(std::string configFile, int lineNum, bool state);
-	void enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable, bool state);
-	void saveModPackInFile(std::string configFile, std::string modPackName, std::vector<int>linePosOfMods);
-	void populateck2mSettings(std::string ck2modFile, std::string ck2modFolder);
+	Files serachForMod();
+	int checkIfModIsInFile(std::string searchMod, LABLE lable);
+	int getModPosInFile(std::string searchMod);
+	FileConfigPos getModPackPosNameStatus();
+	char readStateOfMod(int line);
+	void appedNewModInFile(std::string searchMod, LABLE lable, int line);
+	void chagneStateOfMod(int lineNum, bool state);
+	void enableDisableModCK2(int lineNum, LABLE lable, bool state);
+	void saveModPackInFile(std::string modPackName, std::vector<int>linePosOfMods);
+	void populateck2mSettings();
 	
 	void checkDeletedModsAndRemoveFromCk2ModMenager();
 	void deleteModFromCk2Menager(const int lineNum);

@@ -186,11 +186,11 @@ public:
                 }
                 //SHOW MODPACKS ALREDY CREATED
                 if (showModPacks && !selectModPackButtonClicked) {
-                    FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
+                    FileConfigPos modInfo = getModPackPosNameStatus();
                     for (int i = 0; i < modInfo.modPos.size(); ++i) {
                         if (ImGui::Checkbox(modInfo.name[i].c_str(), &modPackState[i])) {
-                            chagneStateOfMod(ck2mConfigFile, modInfo.modPos[i], modPackState[i]);
-                            enableDisableModCK2(ck2mConfigFile, ck2ModFile, modInfo.modPos[i], LABLE::modPack, modPackState[i]);
+                            chagneStateOfMod(modInfo.modPos[i], modPackState[i]);
+                            enableDisableModCK2(modInfo.modPos[i], LABLE::modPack, modPackState[i]);
                         }
                     }
                 }
@@ -213,11 +213,11 @@ public:
                     ImGui::InputText("", &modPackNameString, 256);
                     if (ImGui::Button("create Modpack")) {
                         if (modPosForModPack.size() > 1) {
-                            saveModPackInFile(ck2mConfigFile, modPackNameString, modPosForModPack);
+                            saveModPackInFile(modPackNameString, modPosForModPack);
                             modPosForModPack.clear();
                             ImGui::Text("modPack created!");
 
-                            FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
+                            FileConfigPos modInfo = getModPackPosNameStatus();
                             modPosForModPack.clear();
                             modPackNameString.clear();
                             for (int i = 0; i < file.numberOfMods; i++) {
@@ -231,8 +231,8 @@ public:
                 ImGui::Begin("mods");
                 for (int i = 0; i < file.numberOfMods; ++i) {
                     if (ImGui::Checkbox(file.mods[i].string().c_str(), &modState[i])) {
-                        chagneStateOfMod(ck2mConfigFile, posVec[i] - 1, modState[i]);
-                        enableDisableModCK2(ck2mConfigFile, ck2ModFile, posVec[i] - 1, LABLE::mod, modState[i]);
+                        chagneStateOfMod(posVec[i] - 1, modState[i]);
+                        enableDisableModCK2(posVec[i] - 1, LABLE::mod, modState[i]);
                     }
                 }
             }

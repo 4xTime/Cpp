@@ -1,9 +1,9 @@
 #include "FileMenager.hpp"
 
-Files fileMenager::serachForMod(std::string modFolder) {
+Files fileMenager::serachForMod() {
 	std::vector<std::filesystem::path>mods;
 
-	for (const auto& entry : std::filesystem::recursive_directory_iterator(modFolder)) {
+	for (const auto& entry : std::filesystem::recursive_directory_iterator(ck2ModFolder)) {
 		if (entry.path().extension() == ".mod") {
 			std::string modName;
 			int modNameLenght = 0;
@@ -20,8 +20,8 @@ Files fileMenager::serachForMod(std::string modFolder) {
 	return Files(mods, mods.size());
 }
 
-int fileMenager::checkIfModIsInFile(std::string configFile, std::string searchMod, LABLE lable) {
-	std::ifstream File(configFile);
+int fileMenager::checkIfModIsInFile(std::string searchMod, LABLE lable) {
+	std::ifstream File(ck2mConfigFile);
 	std::string line;
 
 	bool allowToPass = true;
@@ -58,19 +58,19 @@ int fileMenager::checkIfModIsInFile(std::string configFile, std::string searchMo
 		return linePos+1;
 
 	}
-	std::cout << "cannot open : " << configFile.c_str() << std::endl;
+	std::cout << "cannot open : " << ck2mConfigFile.c_str() << std::endl;
 	exit(1);
 }
 
-void fileMenager::appedNewModInFile(std::string configFile, std::string searchMod, LABLE lable, int line) {
-	std::ofstream File(configFile,std::ios::app|std::ios::out);
+void fileMenager::appedNewModInFile(std::string searchMod, LABLE lable, int line) {
+	std::ofstream File(ck2mConfigFile,std::ios::app|std::ios::out);
 
 	File.seekp(line);
 	File << searchMod + "=0" + "\n";
 }
 
-char fileMenager::readStateOfMod(std::string configFile, int lineNum) {
-	std::ifstream File(configFile);
+char fileMenager::readStateOfMod(int lineNum) {
+	std::ifstream File(ck2mConfigFile);
 	std::string line;
 	int linePos=0;
 
@@ -83,8 +83,8 @@ char fileMenager::readStateOfMod(std::string configFile, int lineNum) {
 	return '0';
 }
 //BUGS!
-void fileMenager::chagneStateOfMod(std::string configFile, int lineNum, bool state) {
-	std::fstream File(configFile, std::ios::in | std::ios::out);
+void fileMenager::chagneStateOfMod(int lineNum, bool state) {
+	std::fstream File(ck2mConfigFile, std::ios::in | std::ios::out);
 	std::vector<std::string> lines;
 	std::string line;
 
@@ -121,8 +121,8 @@ void fileMenager::chagneStateOfMod(std::string configFile, int lineNum, bool sta
 	}
 }
 
-int fileMenager::getModPosInFile(std::string configFile, std::string searchMod) {
-	std::ifstream File(configFile);
+int fileMenager::getModPosInFile( std::string searchMod) {
+	std::ifstream File(ck2mConfigFile);
 	std::string line;
 	
 	int linePos=0;
@@ -139,12 +139,12 @@ int fileMenager::getModPosInFile(std::string configFile, std::string searchMod) 
 		}
 		return -1;
 	}
-	std::cout << "cannot open : "<<configFile.c_str() << std::endl;
+	std::cout << "cannot open : "<< ck2mConfigFile.c_str() << std::endl;
 	exit(1);
 }
 
-void fileMenager::saveModPackInFile(std::string configFile, std::string modPackName, std::vector<int>linePosOfMods) {
-	std::fstream File(configFile, std::ios::in | std::ios::out);
+void fileMenager::saveModPackInFile(std::string modPackName, std::vector<int>linePosOfMods) {
+	std::fstream File(ck2mConfigFile, std::ios::in | std::ios::out);
 
 	std::map<int,std::string> lines;
 	std::string line;
@@ -178,8 +178,8 @@ void fileMenager::saveModPackInFile(std::string configFile, std::string modPackN
 	}
 	else { std::cout << "error with config"<<std::endl; }
 }
-FileConfigPos fileMenager::getModPackPosNameStatus(std::string configFile) {
-	std::ifstream File(configFile);
+FileConfigPos fileMenager::getModPackPosNameStatus() {
+	std::ifstream File(ck2mConfigFile);
 	std::vector<int> modPos;
 	std::vector<char> modStatus;
 	std::vector<std::string>modName;
@@ -213,8 +213,8 @@ FileConfigPos fileMenager::getModPackPosNameStatus(std::string configFile) {
 }
 
 
-void fileMenager::enableDisableModCK2(std::string configFile, std::string ck2ModFile, int lineNum, LABLE lable,bool state) {
-	std::fstream FileModMenagerConfig(configFile, std::ios::in | std::ios::out);
+void fileMenager::enableDisableModCK2(int lineNum, LABLE lable,bool state) {
+	std::fstream FileModMenagerConfig(ck2mConfigFile, std::ios::in | std::ios::out);
 	std::fstream FileCk2ModFile(ck2ModFile, std::ios::in | std::ios::out);
 
 	std::map<int, std::string> lines;
@@ -256,7 +256,7 @@ void fileMenager::enableDisableModCK2(std::string configFile, std::string ck2Mod
 					modPackModToActive.erase(modPackModToActive.length() - 2, 2);
 					modPosList = getVectroOfModPos(modPackModToActive);
 					for (const auto a : modPosList) {
-						enableDisableModCK2(configFile, ck2ModFile, a, LABLE::mod, state);
+						enableDisableModCK2(a, LABLE::mod, state);
 					}
 				}
 			}
@@ -349,20 +349,20 @@ void fileMenager::startUpActions(){
 		exit(1);
 	}
 
-	checkIfModsUsedLineExistIfNotCreate(ck2ModFile);
+	checkIfModsUsedLineExistIfNotCreate();
 	for (int i = 0; i < file.numberOfMods; i++) {
 		modStateForModpack[i] = false;
-		int pos = checkIfModIsInFile(ck2mConfigFile, file.mods[i].string(), LABLE::mod);
+		int pos = checkIfModIsInFile(file.mods[i].string(), LABLE::mod);
 
 		if (pos != -1) {
-			appedNewModInFile(ck2mConfigFile, file.mods[i].string(), LABLE::mod, pos);
+			appedNewModInFile(file.mods[i].string(), LABLE::mod, pos);
 		}
 		//GET FILE LINE AND CHECK MOD STATE
 		if (pos == -1) {
-			int modPos = getModPosInFile(ck2mConfigFile, file.mods[i].string());
+			int modPos = getModPosInFile(file.mods[i].string());
 			if (modPos != -1) {
 				posVec.push_back(modPos);
-				char modStateChar = readStateOfMod(ck2mConfigFile, modPos);
+				char modStateChar = readStateOfMod(modPos);
 				if (modStateChar == '0') {
 					modState[i] = false;
 				}
@@ -373,7 +373,7 @@ void fileMenager::startUpActions(){
 			else if (modPos == -1) { std::cout << "modPos unknown"; exit(1); }
 		}
 	}
-	FileConfigPos modInfo = getModPackPosNameStatus(ck2mConfigFile);
+	FileConfigPos modInfo = getModPackPosNameStatus();
 	for (int i = 0; i < modInfo.modPos.size(); i++) {
 		if (modInfo.status[i] == '1') {
 			modPackState[i] = true;
@@ -385,7 +385,7 @@ void fileMenager::startUpActions(){
 }
 
 bool fileMenager::allocateMem() {
-	file = serachForMod(ck2ModFolder);
+	file = serachForMod();
 	modState = (bool*)malloc(file.numberOfMods * sizeof(bool));
 	modStateForModpack = (bool*)malloc(file.numberOfMods * sizeof(bool));
 	modPackState = (bool*)malloc(100 * sizeof(bool));
@@ -412,9 +412,9 @@ void fileMenager::changeSettings(bool firstRun) {
 	ImGui::Text("Type ck2 settings path u can find it in {Documents\Paradox Interactive\Crusader Kings II}");
 	ImGui::InputText("##file", &ck2ModFile, 256);
 	if (ImGui::Button("append")) {
-		bool rightPath = handleWrongPath(ck2ModFolder, ck2ModFile);
+		bool rightPath = handleWrongPath();
 		if (ck2ModFolder.length() > 1 && ck2ModFile.length() > 1 && rightPath) {
-			populateck2mSettings(ck2ModFile, ck2ModFolder);
+			populateck2mSettings();
 			//IF RUN FIRST TIME...
 			if (checkIfck2mSettingsArePoulated() && firstRun) {
 				checkDeletedModsAndRemoveFromCk2ModMenager();
@@ -433,7 +433,7 @@ void fileMenager::changeSettings(bool firstRun) {
 	}
 }
 
-void fileMenager::populateck2mSettings(std::string ck2modFile, std::string ck2modFolder) {
+void fileMenager::populateck2mSettings() {
 	std::fstream File(ck2mSettings, std::ios::in | std::ios::out);
 	if (File.is_open()) {
 
@@ -444,13 +444,13 @@ void fileMenager::populateck2mSettings(std::string ck2modFile, std::string ck2mo
 		}
 		if (lineBuffer[0].length() > ck2_mod_folder_path_lenght || lineBuffer[1].length() > ck2_settings_folder_path) {
 			//20 is lenght of ck2_mod_folder_path
-			lineBuffer[0] = modFolderPathPrefix + ck2modFolder;
-			lineBuffer[1] = settingsPathPrefix + ck2modFile;
+			lineBuffer[0] = modFolderPathPrefix + ck2ModFolder;
+			lineBuffer[1] = settingsPathPrefix + ck2ModFile;
 			clearFileData(ck2mSettings);
 		}
 		else {
-			lineBuffer[0] += ck2modFolder;
-			lineBuffer[1] += ck2modFile;
+			lineBuffer[0] += ck2ModFolder;
+			lineBuffer[1] += ck2ModFile;
 		}
 		File.clear();
 		File.seekp(0, std::ios::beg);
@@ -469,11 +469,11 @@ void fileMenager::deleteModFromCk2Menager(const int lineNum) {
 }
 
 void fileMenager::checkDeletedModsAndRemoveFromCk2ModMenager() {
-	Files mods = serachForMod(ck2ModFolder);
+	Files mods = serachForMod();
 	std::vector<std::string> DeletedMods = lookForDeletedMods(mods.mods);
 	
 	for (const auto i : DeletedMods) {
-		deleteModFromCk2Menager(getModPosInFile(ck2mConfigFile, i));
+		deleteModFromCk2Menager(getModPosInFile(i));
 	}
 	//exit(1);
 	//make function that delete mods from mod menager
